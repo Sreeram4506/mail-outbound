@@ -593,11 +593,19 @@
             customInstructions: document.getElementById('send-instructions').value.trim(),
           },
         });
-        area.innerHTML = `<div class="preview-email">
-          <div class="email-header">To: ${esc(data.contact.email)} (${esc(data.contact.company)})</div>
-          <div class="email-subject">${esc(data.email.subject)}</div>
-          <div class="email-body">${esc(data.email.body)}</div>
+        area.innerHTML = `<div class="card">
+          <div style="margin-bottom:12px;">
+            <span style="color:var(--text-muted);font-size:0.9rem;">To:</span> <strong>${esc(data.contact.email)}</strong> (${esc(data.contact.company)})
+          </div>
+          <div style="margin-bottom:16px;">
+            <span style="color:var(--text-muted);font-size:0.9rem;">Subject:</span> <strong>${esc(data.email.subject)}</strong>
+          </div>
+          <div style="background:#fff;border-radius:8px;overflow:hidden;border:1px solid var(--border);">
+            <iframe id="preview-frame" style="width:100%;min-height:600px;border:none;" sandbox="allow-same-origin"></iframe>
+          </div>
         </div>`;
+        const frame = document.getElementById('preview-frame');
+        frame.srcdoc = data.htmlBody;
       } catch (e) {
         area.innerHTML = '';
         toast(e.message, 'error');

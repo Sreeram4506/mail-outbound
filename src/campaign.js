@@ -1,6 +1,7 @@
 import { createGmailClient, sendEmail, getSenderEmail } from "./gmail.js";
 import { createAIClient, generateEmail } from "./ai.js";
 import { logSentEmail, getUnsentContacts } from "./contacts.js";
+import { buildHtmlEmail } from "./email-template.js";
 
 function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
@@ -45,13 +46,21 @@ async function runCampaign(cfg, auth, options) {
         customInstructions,
       });
 
+      const htmlBody = buildHtmlEmail({
+        body: email.body,
+        senderName,
+        logoUrl: cfg.logoUrl,
+        companyName: cfg.companyName,
+        websiteUrl: cfg.websiteUrl,
+      });
+
       const emailData = {
         to: contact.email,
         from: senderEmail,
         fromName: senderName,
         subject: email.subject,
-        body: email.body,
-        isHtml: false,
+        body: htmlBody,
+        isHtml: true,
       };
 
       if (onProgress) {

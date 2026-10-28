@@ -15,6 +15,7 @@ import {
 } from "./contacts.js";
 import { runCampaign } from "./campaign.js";
 import { loadTemplate, listTemplates, saveTemplate } from "./templates.js";
+import { buildHtmlEmail } from "./email-template.js";
 
 const app = express();
 app.use(cors());
@@ -176,7 +177,15 @@ app.post("/api/preview", async (req, res) => {
       senderName: cfg.senderName,
       customInstructions,
     });
-    res.json({ email, contact });
+    const htmlBody = buildHtmlEmail({
+      body: email.body,
+      senderName: cfg.senderName,
+      logoUrl: cfg.logoUrl,
+      companyName: cfg.companyName,
+      websiteUrl: cfg.websiteUrl,
+    });
+
+    res.json({ email, contact, htmlBody });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }

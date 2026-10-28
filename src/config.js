@@ -21,6 +21,9 @@ function loadConfig() {
       apiKey: process.env.OPENAI_API_KEY,
     },
     senderName: process.env.SENDER_NAME || "Mail Outbound User",
+    companyName: process.env.COMPANY_NAME || "Indraam",
+    websiteUrl: process.env.WEBSITE_URL || "",
+    logoUrl: process.env.LOGO_URL || "",
     dailySendLimit: parseInt(process.env.DAILY_SEND_LIMIT || "50", 10),
     sendDelayMs: parseInt(process.env.SEND_DELAY_MS || "2000", 10),
     paths: {
