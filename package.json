@@ -1,0 +1,31 @@
+{
+  "name": "mail-outbound",
+  "version": "1.0.0",
+  "description": "AI-powered email outbound automation — gather contacts, generate personalized emails, and send at scale",
+  "main": "src/index.js",
+  "bin": {
+    "mail-outbound": "./src/index.js"
+  },
+  "scripts": {
+    "start": "node src/index.js",
+    "auth": "node src/auth.js",
+    "send": "node src/index.js send",
+    "gather": "node src/index.js gather",
+    "test": "node --test src/tests/*.test.js"
+  },
+  "type": "module",
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "dependencies": {
+    "commander": "^12.1.0",
+    "googleapis": "^140.0.1",
+    "openai": "^4.58.1",
+    "inquirer": "^9.3.6",
+    "chalk": "^5.3.0",
+    "ora": "^8.0.1",
+    "dotenv": "^16.4.5",
+    "csv-parse": "^5.5.6",
+    "csv-stringify": "^6.5.1"
+  }
+}

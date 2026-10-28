@@ -1,0 +1,7 @@
+node_modules/
+.env
+token.json
+contacts.csv
+sent_log.csv
+*.log
+.DS_Store
