@@ -1,0 +1,22 @@
+services:
+  - type: web
+    name: mail-outbound
+    runtime: node
+    plan: free
+    buildCommand: npm install
+    startCommand: node src/server.js
+    envVars:
+      - key: GMAIL_CLIENT_ID
+        sync: false
+      - key: GMAIL_CLIENT_SECRET
+        sync: false
+      - key: OPENAI_API_KEY
+        sync: false
+      - key: GMAIL_REDIRECT_URI
+        sync: false
+      - key: SENDER_NAME
+        sync: false
+      - key: DAILY_SEND_LIMIT
+        value: "50"
+      - key: SEND_DELAY_MS
+        value: "2000"
