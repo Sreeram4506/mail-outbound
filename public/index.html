@@ -1,0 +1,690 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mail Outbound</title>
+  <style>
+    :root {
+      --bg: #0f172a;
+      --bg-card: #1e293b;
+      --bg-input: #334155;
+      --text: #f1f5f9;
+      --text-muted: #94a3b8;
+      --accent: #3b82f6;
+      --accent-hover: #2563eb;
+      --success: #22c55e;
+      --danger: #ef4444;
+      --warning: #f59e0b;
+      --border: #475569;
+      --radius: 8px;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      min-height: 100vh;
+    }
+
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 16px;
+    }
+
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 20px 0;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 24px;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    header h1 {
+      font-size: 1.5rem;
+      font-weight: 700;
+    }
+
+    .status-badges {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .badge {
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-weight: 600;
+    }
+
+    .badge-green { background: #16a34a22; color: var(--success); border: 1px solid #16a34a44; }
+    .badge-red { background: #dc262622; color: var(--danger); border: 1px solid #dc262644; }
+    .badge-blue { background: #2563eb22; color: var(--accent); border: 1px solid #2563eb44; }
+
+    .tabs {
+      display: flex;
+      gap: 4px;
+      margin-bottom: 24px;
+      border-bottom: 1px solid var(--border);
+      overflow-x: auto;
+    }
+
+    .tab {
+      padding: 10px 20px;
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      cursor: pointer;
+      font-size: 0.95rem;
+      border-bottom: 2px solid transparent;
+      white-space: nowrap;
+    }
+
+    .tab:hover { color: var(--text); }
+    .tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+
+    .panel { display: none; }
+    .panel.active { display: block; }
+
+    .card {
+      background: var(--bg-card);
+      border-radius: var(--radius);
+      padding: 24px;
+      margin-bottom: 16px;
+      border: 1px solid var(--border);
+    }
+
+    .card h3 {
+      margin-bottom: 16px;
+      font-size: 1.1rem;
+    }
+
+    .form-group {
+      margin-bottom: 16px;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 6px;
+      color: var(--text-muted);
+      font-size: 0.9rem;
+    }
+
+    input[type="text"], input[type="number"], textarea, select {
+      width: 100%;
+      padding: 10px 14px;
+      background: var(--bg-input);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      color: var(--text);
+      font-size: 0.95rem;
+      font-family: inherit;
+    }
+
+    input:focus, textarea:focus, select:focus {
+      outline: none;
+      border-color: var(--accent);
+    }
+
+    textarea { resize: vertical; min-height: 80px; }
+
+    .btn {
+      padding: 10px 20px;
+      border: none;
+      border-radius: var(--radius);
+      cursor: pointer;
+      font-size: 0.95rem;
+      font-weight: 600;
+      transition: background 0.2s;
+    }
+
+    .btn-primary { background: var(--accent); color: white; }
+    .btn-primary:hover { background: var(--accent-hover); }
+    .btn-success { background: var(--success); color: white; }
+    .btn-success:hover { background: #16a34a; }
+    .btn-danger { background: var(--danger); color: white; }
+    .btn-danger:hover { background: #dc2626; }
+    .btn-outline {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--text);
+    }
+    .btn-outline:hover { background: var(--bg-input); }
+    .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    .btn-row {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.9rem;
+    }
+
+    th, td {
+      text-align: left;
+      padding: 10px 12px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    th { color: var(--text-muted); font-weight: 600; }
+
+    .table-wrap { overflow-x: auto; }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+
+    .stat-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 16px;
+      text-align: center;
+    }
+
+    .stat-card .number {
+      font-size: 2rem;
+      font-weight: 700;
+    }
+
+    .stat-card .label {
+      color: var(--text-muted);
+      font-size: 0.85rem;
+    }
+
+    .log-entry {
+      padding: 8px 12px;
+      border-radius: 4px;
+      margin-bottom: 4px;
+      font-size: 0.9rem;
+      font-family: monospace;
+    }
+
+    .log-sent { background: #16a34a15; color: var(--success); }
+    .log-failed { background: #dc262615; color: var(--danger); }
+    .log-info { background: #2563eb15; color: var(--accent); }
+
+    .preview-email {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px;
+      margin-top: 16px;
+    }
+
+    .preview-email .email-header {
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      margin-bottom: 4px;
+    }
+
+    .preview-email .email-subject {
+      font-size: 1.1rem;
+      font-weight: 600;
+      margin-bottom: 16px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .preview-email .email-body {
+      white-space: pre-wrap;
+      line-height: 1.7;
+    }
+
+    .spinner {
+      display: inline-block;
+      width: 16px;
+      height: 16px;
+      border: 2px solid var(--text-muted);
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin 0.6s linear infinite;
+      margin-right: 8px;
+      vertical-align: middle;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .empty { text-align: center; color: var(--text-muted); padding: 40px; }
+
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      padding: 12px 20px;
+      border-radius: var(--radius);
+      color: white;
+      font-weight: 600;
+      z-index: 1000;
+      animation: slideIn 0.3s ease;
+    }
+
+    .toast-success { background: var(--success); }
+    .toast-error { background: var(--danger); }
+
+    @keyframes slideIn {
+      from { transform: translateY(20px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>Mail Outbound</h1>
+      <div class="status-badges" id="badges"></div>
+    </header>
+
+    <div class="stats-grid" id="stats"></div>
+
+    <div class="tabs">
+      <button class="tab active" data-tab="gather">Gather</button>
+      <button class="tab" data-tab="contacts">Contacts</button>
+      <button class="tab" data-tab="templates">Templates</button>
+      <button class="tab" data-tab="compose">Compose & Send</button>
+      <button class="tab" data-tab="history">History</button>
+    </div>
+
+    <!-- Gather Panel -->
+    <div class="panel active" id="panel-gather">
+      <div class="card">
+        <h3>Gather Contacts with AI</h3>
+        <div class="form-group">
+          <label>What contacts should I find?</label>
+          <input type="text" id="gather-task" placeholder='e.g., "software companies in Bangalore"'>
+        </div>
+        <div class="form-group">
+          <label>Number of contacts</label>
+          <input type="number" id="gather-count" value="20" min="1" max="50">
+        </div>
+        <button class="btn btn-primary" id="btn-gather">Gather Contacts</button>
+      </div>
+      <div id="gather-results"></div>
+    </div>
+
+    <!-- Contacts Panel -->
+    <div class="panel" id="panel-contacts">
+      <div class="card">
+        <h3>Saved Contacts</h3>
+        <div id="contacts-table"></div>
+      </div>
+    </div>
+
+    <!-- Templates Panel -->
+    <div class="panel" id="panel-templates">
+      <div class="card">
+        <h3>Create Template</h3>
+        <div class="form-group">
+          <label>Template Name</label>
+          <input type="text" id="tpl-name" placeholder="e.g., cold-outreach">
+        </div>
+        <div class="form-group">
+          <label>Email Purpose / Description</label>
+          <textarea id="tpl-purpose" rows="4" placeholder="Describe the email you want AI to generate..."></textarea>
+        </div>
+        <div class="form-group">
+          <label>Special Instructions (optional)</label>
+          <input type="text" id="tpl-instructions" placeholder="e.g., Mention our new product launch">
+        </div>
+        <button class="btn btn-primary" id="btn-save-tpl">Save Template</button>
+      </div>
+      <div class="card">
+        <h3>Saved Templates</h3>
+        <div id="templates-list"></div>
+      </div>
+    </div>
+
+    <!-- Compose & Send Panel -->
+    <div class="panel" id="panel-compose">
+      <div class="card">
+        <h3>Compose & Send Campaign</h3>
+        <div class="form-group">
+          <label>Email Template / Purpose</label>
+          <textarea id="send-template" rows="3" placeholder="Describe the email or pick a saved template below..."></textarea>
+        </div>
+        <div class="form-group">
+          <label>Or use a saved template</label>
+          <select id="send-tpl-select">
+            <option value="">-- Write custom above --</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Additional Instructions (optional)</label>
+          <input type="text" id="send-instructions" placeholder="e.g., Mention we're offering 20% discount">
+        </div>
+        <div class="form-group">
+          <label>Limit (leave empty for all unsent contacts)</label>
+          <input type="number" id="send-limit" placeholder="e.g., 10" min="1">
+        </div>
+        <div class="btn-row">
+          <button class="btn btn-outline" id="btn-preview">Preview Email</button>
+          <button class="btn btn-primary" id="btn-dry-run">Dry Run</button>
+          <button class="btn btn-success" id="btn-send">Send Emails</button>
+        </div>
+      </div>
+      <div id="preview-area"></div>
+      <div id="send-log"></div>
+    </div>
+
+    <!-- History Panel -->
+    <div class="panel" id="panel-history">
+      <div class="card">
+        <h3>Sent Email History</h3>
+        <div id="history-table"></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const API = '';
+
+    // ── Helpers ────────────────────────────────────────────────────
+    async function api(path, opts = {}) {
+      const res = await fetch(API + path, {
+        headers: { 'Content-Type': 'application/json' },
+        ...opts,
+        body: opts.body ? JSON.stringify(opts.body) : undefined,
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Request failed');
+      return data;
+    }
+
+    function toast(msg, type = 'success') {
+      const el = document.createElement('div');
+      el.className = `toast toast-${type}`;
+      el.textContent = msg;
+      document.body.appendChild(el);
+      setTimeout(() => el.remove(), 3000);
+    }
+
+    function esc(str) {
+      const d = document.createElement('div');
+      d.textContent = str;
+      return d.innerHTML;
+    }
+
+    // ── Tabs ──────────────────────────────────────────────────────
+    document.querySelectorAll('.tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+        tab.classList.add('active');
+        document.getElementById('panel-' + tab.dataset.tab).classList.add('active');
+
+        if (tab.dataset.tab === 'contacts') loadContacts();
+        if (tab.dataset.tab === 'templates') loadTemplates();
+        if (tab.dataset.tab === 'compose') loadTemplateSelect();
+        if (tab.dataset.tab === 'history') loadHistory();
+      });
+    });
+
+    // ── Status ────────────────────────────────────────────────────
+    async function loadStatus() {
+      try {
+        const s = await api('/api/status');
+        document.getElementById('badges').innerHTML = `
+          <span class="badge ${s.authenticated ? 'badge-green' : 'badge-red'}">
+            ${s.authenticated ? 'Gmail Connected' : 'Gmail Not Connected'}
+          </span>
+          <span class="badge ${s.configValid ? 'badge-green' : 'badge-red'}">
+            ${s.configValid ? 'Config OK' : 'Missing: ' + s.missingConfig.join(', ')}
+          </span>
+        `;
+        document.getElementById('stats').innerHTML = `
+          <div class="stat-card"><div class="number">${s.contacts}</div><div class="label">Total Contacts</div></div>
+          <div class="stat-card"><div class="number">${s.unsent}</div><div class="label">Unsent</div></div>
+          <div class="stat-card"><div class="number" style="color:var(--success)">${s.sent}</div><div class="label">Sent</div></div>
+          <div class="stat-card"><div class="number" style="color:var(--danger)">${s.failed}</div><div class="label">Failed</div></div>
+        `;
+      } catch (e) {
+        document.getElementById('badges').innerHTML =
+          '<span class="badge badge-red">Server error</span>';
+      }
+    }
+
+    // ── Gather ────────────────────────────────────────────────────
+    let gatheredContacts = [];
+
+    document.getElementById('btn-gather').addEventListener('click', async () => {
+      const task = document.getElementById('gather-task').value.trim();
+      const count = parseInt(document.getElementById('gather-count').value) || 20;
+      if (!task) return toast('Enter what contacts to find', 'error');
+
+      const btn = document.getElementById('btn-gather');
+      btn.disabled = true;
+      btn.innerHTML = '<span class="spinner"></span>AI is researching...';
+      document.getElementById('gather-results').innerHTML = '';
+
+      try {
+        const data = await api('/api/contacts/gather', {
+          method: 'POST',
+          body: { task, count },
+        });
+        gatheredContacts = data.contacts;
+
+        let html = '<div class="card"><h3>Found ' + data.contacts.length + ' contacts</h3>';
+        html += '<div class="table-wrap"><table><tr><th>Company</th><th>Email</th><th>Contact</th><th>Location</th><th>Industry</th></tr>';
+        for (const c of data.contacts) {
+          html += `<tr><td>${esc(c.company)}</td><td>${esc(c.email)}</td><td>${esc(c.contact_name)}</td><td>${esc(c.location)}</td><td>${esc(c.industry)}</td></tr>`;
+        }
+        html += '</table></div>';
+        html += '<br><button class="btn btn-success" id="btn-save-contacts">Save All Contacts</button></div>';
+        document.getElementById('gather-results').innerHTML = html;
+
+        document.getElementById('btn-save-contacts').addEventListener('click', async () => {
+          try {
+            const result = await api('/api/contacts/save', {
+              method: 'POST',
+              body: { contacts: gatheredContacts },
+            });
+            toast(`Saved! Added: ${result.added}, Duplicates: ${result.duplicates}`);
+            loadStatus();
+          } catch (e) { toast(e.message, 'error'); }
+        });
+      } catch (e) {
+        toast(e.message, 'error');
+      } finally {
+        btn.disabled = false;
+        btn.textContent = 'Gather Contacts';
+      }
+    });
+
+    // ── Contacts ──────────────────────────────────────────────────
+    async function loadContacts() {
+      try {
+        const data = await api('/api/contacts');
+        if (data.contacts.length === 0) {
+          document.getElementById('contacts-table').innerHTML = '<p class="empty">No contacts yet. Use the Gather tab to find some.</p>';
+          return;
+        }
+        let html = '<div class="table-wrap"><table><tr><th>Company</th><th>Email</th><th>Contact</th><th>Location</th><th>Industry</th><th>Notes</th></tr>';
+        for (const c of data.contacts) {
+          html += `<tr><td>${esc(c.company)}</td><td>${esc(c.email)}</td><td>${esc(c.contact_name)}</td><td>${esc(c.location)}</td><td>${esc(c.industry)}</td><td>${esc(c.notes)}</td></tr>`;
+        }
+        html += '</table></div>';
+        document.getElementById('contacts-table').innerHTML = html;
+      } catch (e) { toast(e.message, 'error'); }
+    }
+
+    // ── Templates ─────────────────────────────────────────────────
+    async function loadTemplates() {
+      try {
+        const data = await api('/api/templates');
+        if (data.templates.length === 0) {
+          document.getElementById('templates-list').innerHTML = '<p class="empty">No templates yet.</p>';
+          return;
+        }
+        let html = '';
+        for (const t of data.templates) {
+          html += `<div style="padding:12px 0;border-bottom:1px solid var(--border)">
+            <strong>${esc(t.name)}</strong>
+            <p style="color:var(--text-muted);margin-top:4px">${esc(t.purpose)}</p>
+            ${t.instructions ? '<p style="color:var(--accent);font-size:0.85rem;margin-top:4px">Instructions: ' + esc(t.instructions) + '</p>' : ''}
+          </div>`;
+        }
+        document.getElementById('templates-list').innerHTML = html;
+      } catch (e) { toast(e.message, 'error'); }
+    }
+
+    document.getElementById('btn-save-tpl').addEventListener('click', async () => {
+      const name = document.getElementById('tpl-name').value.trim();
+      const purpose = document.getElementById('tpl-purpose').value.trim();
+      const instructions = document.getElementById('tpl-instructions').value.trim();
+      if (!name || !purpose) return toast('Name and purpose are required', 'error');
+
+      try {
+        await api('/api/templates', { method: 'POST', body: { name, purpose, instructions } });
+        toast('Template saved!');
+        document.getElementById('tpl-name').value = '';
+        document.getElementById('tpl-purpose').value = '';
+        document.getElementById('tpl-instructions').value = '';
+        loadTemplates();
+      } catch (e) { toast(e.message, 'error'); }
+    });
+
+    async function loadTemplateSelect() {
+      try {
+        const data = await api('/api/templates');
+        const sel = document.getElementById('send-tpl-select');
+        sel.innerHTML = '<option value="">-- Write custom above --</option>';
+        for (const t of data.templates) {
+          sel.innerHTML += `<option value="${esc(t.purpose)}">${esc(t.name)}</option>`;
+        }
+        sel.addEventListener('change', () => {
+          if (sel.value) document.getElementById('send-template').value = sel.value;
+        });
+      } catch (e) { /* ignore */ }
+    }
+
+    // ── Compose & Send ────────────────────────────────────────────
+    function getTemplate() {
+      return document.getElementById('send-template').value.trim()
+        || document.getElementById('send-tpl-select').value;
+    }
+
+    document.getElementById('btn-preview').addEventListener('click', async () => {
+      const template = getTemplate();
+      if (!template) return toast('Enter or select a template', 'error');
+
+      const area = document.getElementById('preview-area');
+      area.innerHTML = '<div class="card"><span class="spinner"></span> Generating preview...</div>';
+
+      try {
+        const data = await api('/api/preview', {
+          method: 'POST',
+          body: {
+            template,
+            customInstructions: document.getElementById('send-instructions').value.trim(),
+          },
+        });
+        area.innerHTML = `<div class="preview-email">
+          <div class="email-header">To: ${esc(data.contact.email)} (${esc(data.contact.company)})</div>
+          <div class="email-subject">${esc(data.email.subject)}</div>
+          <div class="email-body">${esc(data.email.body)}</div>
+        </div>`;
+      } catch (e) {
+        area.innerHTML = '';
+        toast(e.message, 'error');
+      }
+    });
+
+    async function doSend(dryRun) {
+      const template = getTemplate();
+      if (!template) return toast('Enter or select a template', 'error');
+
+      const limitVal = document.getElementById('send-limit').value;
+      const limit = limitVal ? parseInt(limitVal) : undefined;
+
+      const label = dryRun ? 'Dry Run' : 'SEND';
+      if (!dryRun && !confirm(`Send personalized emails to all unsent contacts${limit ? ' (limit: ' + limit + ')' : ''}?`)) return;
+
+      const log = document.getElementById('send-log');
+      log.innerHTML = '<div class="card"><span class="spinner"></span> Campaign running...</div>';
+
+      const btns = [document.getElementById('btn-dry-run'), document.getElementById('btn-send')];
+      btns.forEach(b => b.disabled = true);
+
+      try {
+        const data = await api('/api/send', {
+          method: 'POST',
+          body: {
+            template,
+            customInstructions: document.getElementById('send-instructions').value.trim(),
+            limit,
+            dryRun,
+          },
+        });
+
+        let html = '<div class="card"><h3>Campaign Complete</h3>';
+        html += `<p style="margin-bottom:12px">Sent: <strong style="color:var(--success)">${data.sent}</strong> | Failed: <strong style="color:var(--danger)">${data.failed}</strong> | Skipped: <strong style="color:var(--warning)">${data.skipped}</strong></p>`;
+
+        for (const e of (data.emails || [])) {
+          if (e.status === 'sent' || e.status === 'dry-run') {
+            html += `<div class="log-entry log-sent">${e.status === 'dry-run' ? '[DRY RUN] ' : ''}${esc(e.contact.email)} — ${esc(e.email.subject)}</div>`;
+          } else {
+            html += `<div class="log-entry log-failed">${esc(e.contact.email)} — ${esc(e.error)}</div>`;
+          }
+        }
+        html += '</div>';
+        log.innerHTML = html;
+        loadStatus();
+      } catch (e) {
+        log.innerHTML = '';
+        toast(e.message, 'error');
+      } finally {
+        btns.forEach(b => b.disabled = false);
+      }
+    }
+
+    document.getElementById('btn-dry-run').addEventListener('click', () => doSend(true));
+    document.getElementById('btn-send').addEventListener('click', () => doSend(false));
+
+    // ── History ───────────────────────────────────────────────────
+    async function loadHistory() {
+      try {
+        const data = await api('/api/sent');
+        if (data.sent.length === 0) {
+          document.getElementById('history-table').innerHTML = '<p class="empty">No emails sent yet.</p>';
+          return;
+        }
+        let html = '<div class="table-wrap"><table><tr><th>Time</th><th>To</th><th>Company</th><th>Subject</th><th>Status</th></tr>';
+        for (const s of data.sent.reverse()) {
+          const statusClass = s.status === 'sent' ? 'color:var(--success)' : 'color:var(--danger)';
+          html += `<tr><td>${esc(s.timestamp)}</td><td>${esc(s.to)}</td><td>${esc(s.company)}</td><td>${esc(s.subject)}</td><td style="${statusClass}">${esc(s.status)}</td></tr>`;
+        }
+        html += '</table></div>';
+        document.getElementById('history-table').innerHTML = html;
+      } catch (e) { toast(e.message, 'error'); }
+    }
+
+    // ── Auth redirect check ───────────────────────────────────────
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('auth') === 'success') {
+      toast('Gmail authenticated successfully!');
+      window.history.replaceState({}, '', '/');
+    } else if (params.get('auth') === 'error') {
+      toast('Auth failed: ' + (params.get('message') || 'Unknown error'), 'error');
+      window.history.replaceState({}, '', '/');
+    }
+
+    // ── Init ──────────────────────────────────────────────────────
+    loadStatus();
+  </script>
+</body>
+</html>

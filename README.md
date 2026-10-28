@@ -102,6 +102,47 @@ node src/index.js send --template default --instructions "Mention our new AI pro
 node src/index.js status
 ```
 
+## Web Dashboard
+
+Start the web server for a full browser-based UI:
+
+```bash
+npm start
+```
+
+Open `http://localhost:3000` — the dashboard lets you:
+- Gather contacts with AI
+- Manage contacts and templates
+- Preview AI-generated emails
+- Run campaigns with one click
+- View sent email history
+
+## Deployment
+
+### Railway / Render / Fly.io
+
+1. Push this repo to GitHub
+2. Connect your repo on [Railway](https://railway.app), [Render](https://render.com), or [Fly.io](https://fly.io)
+3. Set environment variables (`GMAIL_CLIENT_ID`, `GMAIL_CLIENT_SECRET`, `OPENAI_API_KEY`, etc.)
+4. Set `GMAIL_REDIRECT_URI` to `https://your-app-url.com/api/auth/callback`
+5. Update the same redirect URI in Google Cloud Console
+6. Deploy — the app runs on port 3000 by default (set `PORT` env var to change)
+
+### Docker
+
+```bash
+docker build -t mail-outbound .
+docker run -p 3000:3000 --env-file .env mail-outbound
+```
+
+### Heroku
+
+```bash
+heroku create your-app-name
+heroku config:set GMAIL_CLIENT_ID=xxx GMAIL_CLIENT_SECRET=xxx OPENAI_API_KEY=xxx
+git push heroku main
+```
+
 ## How it works
 
 1. **Gather**: AI researches and collects contact emails based on your criteria

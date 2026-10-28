@@ -7,8 +7,9 @@
     "mail-outbound": "./src/index.js"
   },
   "scripts": {
-    "start": "node src/index.js",
-    "auth": "node src/auth.js",
+    "start": "node src/server.js",
+    "cli": "node src/index.js",
+    "auth": "node src/index.js auth",
     "send": "node src/index.js send",
     "gather": "node src/index.js gather",
     "test": "node --test src/tests/*.test.js"
@@ -18,14 +19,16 @@
     "node": ">=18.0.0"
   },
   "dependencies": {
-    "commander": "^12.1.0",
-    "googleapis": "^140.0.1",
-    "openai": "^4.58.1",
-    "inquirer": "^9.3.6",
     "chalk": "^5.3.0",
-    "ora": "^8.0.1",
-    "dotenv": "^16.4.5",
+    "commander": "^12.1.0",
+    "cors": "^2.8.6",
     "csv-parse": "^5.5.6",
-    "csv-stringify": "^6.5.1"
+    "csv-stringify": "^6.5.1",
+    "dotenv": "^16.4.5",
+    "express": "^5.3.0",
+    "googleapis": "^140.0.1",
+    "inquirer": "^9.3.6",
+    "openai": "^4.58.1",
+    "ora": "^8.0.1"
   }
 }
