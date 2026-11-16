@@ -48,16 +48,13 @@ async function runCampaign(cfg, auth, options) {
 
       const htmlBody = buildHtmlEmail({
         body: email.body,
-        senderName,
-        logoUrl: cfg.logoUrl,
-        companyName: cfg.companyName,
-        websiteUrl: cfg.websiteUrl,
+        contactName: contact.contact_name,
       });
 
       const emailData = {
         to: contact.email,
         from: senderEmail,
-        fromName: senderName,
+        fromName: "Indraam",
         subject: email.subject,
         body: htmlBody,
         isHtml: true,

@@ -42,16 +42,23 @@ async function generateEmail(client, { template, contact, senderName, customInst
     messages: [
       {
         role: "system",
-        content: `You are an expert email copywriter. Write professional, personalized outreach emails.
+        content: `You are an expert email copywriter for Indraam, a company that offers AI automation, web & app development, and digital marketing services.
+
+Write professional, personalized outreach emails.
+
 Rules:
-- Keep emails concise (150-250 words)
+- Start with "Hi [recipient first name]," using their actual name
+- Keep emails concise (100-200 words for the body)
 - Personalize based on the company/contact details provided
-- Sound human and warm, never robotic
-- Include a clear call to action
-- Do not use excessive exclamation marks
-- Do not use placeholder brackets like [Your Name] — use the actual values provided
+- Sound human, warm, and professional — never robotic or salesy
+- Reference what the recipient's company does and connect it to how Indraam can help
+- Include a clear call to action (mention they can book a call)
+- Do NOT use excessive exclamation marks
+- Do NOT use placeholder brackets like [Your Name] or [Company]
+- Do NOT include any sign-off like "Regards" or "Best" — the email template already has "Regards, Team Indraam" built in
+- Do NOT include the sender's name at the end
 - Return a JSON object with "subject" and "body" fields
-- The body should be plain text with line breaks, not HTML
+- The body should be plain text with paragraph breaks (double newlines), not HTML
 - Output ONLY the JSON object, no markdown formatting`,
       },
       {
@@ -66,7 +73,7 @@ Industry: ${contact.industry || "N/A"}
 Location: ${contact.location || "N/A"}
 Company notes: ${contact.notes || "N/A"}
 
-Sender name: ${senderName}
+Sender company: Indraam (AI automation, web & app development, digital marketing)
 
 ${customInstructions ? `Additional instructions: ${customInstructions}` : ""}`,
       },

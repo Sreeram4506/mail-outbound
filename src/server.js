@@ -179,13 +179,49 @@ app.post("/api/preview", async (req, res) => {
     });
     const htmlBody = buildHtmlEmail({
       body: email.body,
-      senderName: cfg.senderName,
-      logoUrl: cfg.logoUrl,
-      companyName: cfg.companyName,
-      websiteUrl: cfg.websiteUrl,
+      contactName: contact.contact_name,
     });
 
     res.json({ email, contact, htmlBody });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// ── Test Email ───────────────────────────────────────────────────
+app.post("/api/test-email", async (req, res) => {
+  const { to } = req.body;
+  if (!to) return res.status(400).json({ error: "to email is required" });
+
+  const cfg = loadConfig();
+  const token = loadToken();
+  if (!token) return res.status(401).json({ error: "Not authenticated with Gmail" });
+
+  const { createGmailClient: createGmail, sendEmail: send, getSenderEmail: getSender } = await import("./gmail.js");
+  const auth = getAuthenticatedClient(cfg, token);
+  const gmail = createGmail(auth);
+  const senderEmail = await getSender(gmail);
+
+  const testBody = `Hi there,
+
+This is a test email from the Indraam Mail Outbound system.
+
+If you're seeing this with the full Indraam branding — dark header with logo, gold accents, footer with social links — then everything is working perfectly.
+
+Your email automation is ready to go. You can now gather contacts, generate personalized AI emails, and send them at scale through the dashboard.`;
+
+  const htmlBody = buildHtmlEmail({ body: testBody });
+
+  try {
+    const result = await send(gmail, {
+      to,
+      from: senderEmail,
+      fromName: "Indraam",
+      subject: "Test Email — Indraam Mail Outbound",
+      body: htmlBody,
+      isHtml: true,
+    });
+    res.json({ message: `Test email sent to ${to}`, messageId: result.id });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
