@@ -119,7 +119,7 @@ function buildHtmlEmail({ body, contactName, previewText }) {
         <tr>
           <td align="center" style="padding:14px 28px 30px 28px;font-family:Arial,Helvetica,sans-serif;font-size:11px;line-height:18px;color:#8e8e91;">
             You are receiving this email because you are connected with Indraam.<br>
-            If you prefer not to receive these emails, reply with &ldquo;unsubscribe&rdquo;.
+            <a href="mailto:hello@indraam.com?subject=Unsubscribe&amp;body=Please%20remove%20me%20from%20your%20mailing%20list." style="color:#bdbdc0;text-decoration:underline;">Unsubscribe</a>
             &nbsp;&middot;&nbsp;
             <a href="https://www.indraam.com/privacy.html" target="_blank" style="color:#bdbdc0;text-decoration:underline;">Privacy Policy</a>
             &nbsp;&middot;&nbsp;
